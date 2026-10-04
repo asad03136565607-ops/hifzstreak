@@ -8,28 +8,17 @@ jobs:
       - run: unzip -o hifzstreak.zip || true
       - run: |
           if [ -d hifzstreak/hifzstreak ]; then
-            mv hifzstreak/hifzstreak hifz_temp
+            mv hifzstreak/hifzstreak /tmp/h
             rm -rf hifzstreak
-            mv hifz_temp hifzstreak
+            mv /tmp/h hifzstreak
           fi
-          if [ -d hifzstreak ]; then
-            shopt -s dotglob
-            mv hifzstreak/*. || true
-            shopt -u dotglob
+          if [ -f hifzstreak/package.json ]; then
+            cp -a hifzstreak/. $PWD
             rm -rf hifzstreak
           fi
+          ls -la
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
       - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm install
-      - run: npx expo prebuild --platform android --no-install
-      - run: cd android && chmod +x gradlew &&./gradlew assembleRelease
-      - uses: actions/upload-artifact@v4
-        with:
-          name: HifzStreak-APK
-          path: android/app/build/outputs/apk/release/*.apk
-          
