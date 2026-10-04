@@ -1,34 +1,30 @@
-
-name: Build HifzStreak APK
+name: Build APK
 on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Unzip App
-        run: |
-          unzip hifzstreak.zip
-          rm hifzstreak.zip
-          mv hifzstreak/*./ || mv */*./ || true
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - run: unzip -o hifzstreak.zip || true
+      - run: |
+          if [ -d hifzstreak ]; then
+            shopt -s dotglob
+            mv hifzstreak/* . || true
+            shopt -u dotglob
+            rm -rf hifzstreak
+          fi
+      - uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - name: Install and Build
-        run: |
-          npm install
-          npx expo prebuild --no-install --platform android
-          cd android
-          chmod +x gradlew
-         ./gradlew assembleRelease
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+          node-version: '20'
+      - run: npm install
+      - run: npx expo prebuild --platform android --no-install
+      - run: cd android && chmod +x gradlew && ./gradlew assembleRelease
+      - uses: actions/upload-artifact@v4
         with:
           name: HifzStreak-APK
           path: android/app/build/outputs/apk/release/*.apk
+          
