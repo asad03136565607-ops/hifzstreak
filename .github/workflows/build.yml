@@ -7,9 +7,14 @@ jobs:
       - uses: actions/checkout@v4
       - run: unzip -o hifzstreak.zip || true
       - run: |
+          if [ -d hifzstreak/hifzstreak ]; then
+            mv hifzstreak/hifzstreak hifz_temp
+            rm -rf hifzstreak
+            mv hifz_temp hifzstreak
+          fi
           if [ -d hifzstreak ]; then
             shopt -s dotglob
-            mv hifzstreak/* . || true
+            mv hifzstreak/*. || true
             shopt -u dotglob
             rm -rf hifzstreak
           fi
@@ -22,7 +27,7 @@ jobs:
           node-version: '20'
       - run: npm install
       - run: npx expo prebuild --platform android --no-install
-      - run: cd android && chmod +x gradlew && ./gradlew assembleRelease
+      - run: cd android && chmod +x gradlew &&./gradlew assembleRelease
       - uses: actions/upload-artifact@v4
         with:
           name: HifzStreak-APK
